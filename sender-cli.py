@@ -37,7 +37,7 @@ class CLManager(Cmd):
                         )
 
                     email = conf.get("email", {})
-                    if email:
+                    if input("Load email?[Yes/No]") == "Yes" and email:
                         self.email = Email(
                             from_addr=(email["from_name"], email["from_addr"]),
                             subject=input("Title:")
@@ -71,7 +71,7 @@ class CLManager(Cmd):
             conf["sender"]["ssl"] = self.sender.ssl
             conf["sender"]["start_ssl"] = self.sender.start_ssl
 
-        if self.email:
+        if input("Save email?[Yes/No]") == "Yes" and self.email:
             conf["email"] = {}
             conf["email"]["from_name"], conf["email"]["from_addr"] = self.email.from_addr
 
