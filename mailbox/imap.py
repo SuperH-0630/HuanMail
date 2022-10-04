@@ -55,8 +55,8 @@ class Imap:
         self.disconnect()
         return res
 
-    def __search(self):
-        _, data = self.server.search(None, 'ALL')
+    def __search(self, opt="ALL"):
+        _, data = self.server.search(None, opt)
         return data[0].decode("utf-8").split()
 
     def list(self):
@@ -91,9 +91,9 @@ class Imap:
         self.__mailbox[num] = mail
         return mail
 
-    def fetch_all(self):
+    def fetch_all(self, opt="ALL"):
         self.connect()
-        for i in self.__search():
+        for i in self.__search(opt):
             self.__fetch(i)
         self.disconnect()
 

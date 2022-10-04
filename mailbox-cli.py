@@ -3,6 +3,7 @@ import imaplib
 from cmd import Cmd
 from typing import Optional
 import os
+from time import strftime, localtime, strptime
 
 from mailbox.email import Mail
 from mailbox.imap import Imap
@@ -169,17 +170,24 @@ Sure? [Yes/No]""")
     def do_get(self, arg):
         """Get all mail from mailbox."""
 
-        if arg != "ALL":
-            print("Bad syntax.")
-            return
-
         if not self.imap:
             print("Please login first.")
             return
 
+        if arg == "ALL":
+            pass
+        elif arg == "TODAY":
+            arg = "ON " + strftime('%d-%b-%Y', localtime())
+        else:
+            try:
+                arg = "ON " + strftime('%d-%b-%Y', strptime(arg, "%Y-%m-%d"))
+            except ValueError:
+                print("Bad syntax.")
+                return
+
         print("Please wait...")
         try:
-            self.imap.fetch_all()
+            self.imap.fetch_all(arg)
         except imaplib.IMAP4.error:
             print("IMAP4 error, please check setting.")
         else:
