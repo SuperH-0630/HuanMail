@@ -29,14 +29,14 @@ class Email:
         self.text.append(text)
 
     def add_text_from_file(self, path):
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             self.add_text(f.read())
 
     def add_html(self, html: str):
         self.html.append(html)
 
     def add_html_from_file(self, path):
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             self.add_html(f.read())
 
     def add_bytes(self, filename: str, file: bytes):
