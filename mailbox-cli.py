@@ -140,6 +140,7 @@ Sure? [Yes/No]""")
             print("Okay.")
 
     def do_logout(self, arg):
+        """Logout imap server."""
         if len(arg) != 0:
             print("Bad syntax.")
             return
@@ -168,7 +169,7 @@ Sure? [Yes/No]""")
             print("Not login.")
 
     def do_get(self, arg):
-        """Get all mail from mailbox."""
+        """Get mail from mailbox."""
 
         if not self.imap:
             print("Please login first.")
@@ -194,7 +195,7 @@ Sure? [Yes/No]""")
             print("Okay.")
 
     def do_show(self, arg):
-        """Show Mailbox"""
+        """Show Mail List"""
 
         try:
             start, step = arg.split()
@@ -292,6 +293,8 @@ check file   ---    check mail file and save."""
             print("Okay.")
 
     def do_mailbox(self, arg):
+        """mail show    ---    show all mailbox.
+mail setting ---    select a mailbox."""
         if not self.imap:
             print("Please login first.")
             return
