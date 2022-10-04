@@ -23,7 +23,6 @@ class Sender:
             server.starttls()
         server.login(self.user, self.passwd)
         server.sendmail(msg.from_addr[1],
-                             [i[1] for i in msg.to_addr + msg.cc_addr + msg.bcc_addr],
-                             msg.as_string())
+                        [i[1] for i in msg.to_addr + msg.cc_addr + msg.bcc_addr],
+                        msg.as_string())
         server.quit()
-
