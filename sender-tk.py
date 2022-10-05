@@ -10,14 +10,17 @@ import os.path
 from sender.email import Email
 from sender.smtp import Sender
 
-# 邮件输入框
-TEXT_WIDTH = 40
-TEXT_HEIGHT = 20
+# 顶层Frame
+FRAME_PADX = 5
 
 # 顶层窗口按钮
 BUTTON_WIDTH = 40
 BUTTON_WIDTH_L = 20
 BUTTON_HEIGHT = 1
+
+# 邮件输入框
+TEXT_WIDTH = 40
+TEXT_HEIGHT = 20
 
 # 邮件信息显示框
 EMAIL_INFO_BUTTON_WIDTH = 20
@@ -47,27 +50,28 @@ ADD_RC_LISTBOX_WIDTH = 35
 ADD_RC_LISTBOX_HEIGHT = 10
 
 
-class SenderGUI:
+class SenderGUI(tk.Tk):
     def __init__(self):
-        self.win = tk.Tk()
+        super().__init__()
+
         self.sender: Optional[Sender] = None
         self.email: Optional[Email] = None
 
-        self.win.iconbitmap('HuanMail.ico')
-        self.win.title("HuanMail (SMTP)")
-        self.win.resizable(False, False)
+        self.iconbitmap('HuanMail.ico')
+        self.title("HuanMail (SMTP)")
+        self.resizable(False, False)
 
-        self.login_frame = tk.Frame(self.win)
-        self.email_create_frame = tk.Frame(self.win)
-        self.add_to_frame = tk.Frame(self.win)
-        self.text_frame = tk.Frame(self.win)
-        self.file_frame = tk.Frame(self.win)
-        self.config_frame = tk.Frame(self.win)
-        self.control_frame = tk.Frame(self.win)
+        self.login_frame = tk.Frame(self)
+        self.email_create_frame = tk.Frame(self)
+        self.add_to_frame = tk.Frame(self)
+        self.text_frame = tk.Frame(self)
+        self.file_frame = tk.Frame(self)
+        self.config_frame = tk.Frame(self)
+        self.control_frame = tk.Frame(self)
 
         for i in (self.login_frame, self.email_create_frame, self.add_to_frame, self.text_frame,
                   self.file_frame, self.config_frame, self.control_frame):
-            i.pack(side="top", padx=5)
+            i.pack(side="top", padx=FRAME_PADX)
 
         button_arg = dict(width=BUTTON_WIDTH_L, height=BUTTON_HEIGHT, border=2)
         button_big_arg = dict(width=BUTTON_WIDTH, height=BUTTON_HEIGHT, border=2)
@@ -92,11 +96,11 @@ class SenderGUI:
         self.load = tk.Button(self.config_frame, text="Load", command=self.load_config, **button_arg)
         self.save = tk.Button(self.config_frame, text="Save", command=self.save_config, **button_arg)
 
-        self.send = tk.Button(self.control_frame, text="Send", command=self.send, **button_arg)
-        self.quit = tk.Button(self.control_frame, text="Quit", command=self.quit, **button_arg)
+        self.send_btn = tk.Button(self.control_frame, text="Send", command=self.send_mail, **button_arg)
+        self.quit_btn = tk.Button(self.control_frame, text="Quit", command=self.destroy, **button_arg)
 
         for i in (self.login, self.user_show, self.create, self.email_show, self.add_as_html,
-                  self.add_as_text, self.load, self.save, self.send, self.quit):
+                  self.add_as_text, self.load, self.save, self.send_btn, self.quit_btn):
             i.pack(side="left", pady=2.5, ipadx=2)
         self.add_to.pack(side="left", pady=2.5, ipadx=8)
 
@@ -107,7 +111,7 @@ class SenderGUI:
             i.pack(side="top", pady=2.5, ipadx=8)
 
     def show_login(self):
-        win = tk.Toplevel(self.win)
+        win = tk.Toplevel(self)
         win.title("User Login")
         win.resizable(False, False)
 
@@ -199,7 +203,7 @@ Passwd: {self.sender.passwd}""")
             msg.showwarning("Not login", "You should login first.")
 
     def show_create(self):
-        win = tk.Toplevel(self.win)
+        win = tk.Toplevel(self)
         win.title("Email Create")
         win.resizable(False, False)
 
@@ -243,7 +247,7 @@ Passwd: {self.sender.passwd}""")
             msg.showwarning("Not email", "You should create email first.")
             return
 
-        win = tk.Toplevel(self.win)
+        win = tk.Toplevel(self)
         win.title("Email info")
         win.resizable(False, False)
 
@@ -318,7 +322,7 @@ Passwd: {self.sender.passwd}""")
             msg.showwarning("Not email", "You should create email first.")
             return
 
-        win = tk.Toplevel(self.win)
+        win = tk.Toplevel(self)
         win.title("Add Recipient")
         win.resizable(False, False)
 
@@ -508,7 +512,7 @@ Passwd: {self.sender.passwd}""")
                 file.close()
                 msg.showinfo("Loading success", "Success!")
 
-    def send(self):
+    def send_mail(self):
         if not self.sender:
             msg.showwarning("Not login", "You should login first.")
             return
@@ -522,12 +526,6 @@ Passwd: {self.sender.passwd}""")
             msg.showinfo("Send email", "Success!")
         except smtplib.SMTPException:
             msg.showerror("Send fail", "SMTP error.")
-
-    def mainloop(self):
-        self.win.mainloop()
-
-    def quit(self):
-        self.win.destroy()
 
 
 if __name__ == '__main__':
