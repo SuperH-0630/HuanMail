@@ -170,10 +170,10 @@ class SenderGUI(tk.Tk):
             msg.showerror("Login error", "Port must be int.")
             return
 
-        if ssl == 0:
+        if ssl == 1:
             ssl = False
             start_ssl = False
-        elif ssl == 1:
+        elif ssl == 2:
             ssl = True
             start_ssl = False
         else:
@@ -183,11 +183,11 @@ class SenderGUI(tk.Tk):
         try:
             self.sender = Sender(user, passwd, host=host, port=port, debug=False, ssl=ssl, start_ssl=start_ssl)
         except smtplib.SMTPAuthenticationError:
-            msg.showinfo("Login error", "Sorry, SMTP Authentication error. Please check your user and password.")
+            msg.showerror("Login error", "Sorry, SMTP Authentication error. Please check your user and password.")
         except smtplib.SMTPException:
-            msg.showinfo("Login error", "Sorry, SMTP error.")
+            msg.showerror("Login error", "Sorry, SMTP error.")
         except Exception:
-            msg.showinfo("Login error", "Sorry, Unknown error.")
+            msg.showerror("Login error", "Sorry, Unknown error.")
         else:
             if win:
                 win.destroy()
@@ -464,7 +464,7 @@ Passwd: {self.sender.passwd}""")
             conf["sender"]["ssl"] = self.sender.ssl
             conf["sender"]["start_ssl"] = self.sender.start_ssl
         try:
-            file = fd.asksaveasfile(mode="w", title="Loading config file", filetypes=[("JSON", ".json")],
+            file = fd.asksaveasfile(mode="w", title="Saving config file", filetypes=[("JSON", ".json")],
                                     defaultextension=".json")
             if file is not None:
                 file.write(json.dumps(conf))

@@ -160,11 +160,11 @@ Sure? [Yes/No]""")
             return
 
         if self.imap:
-            print(f"Host: {self.imap.host}:{self.imap.port}")
-            print(f"User: {self.imap.user}")
-            print(f"Passwd: {self.imap.passwd}")
-            print(f"SSL: {self.imap.ssl}")
-            print(f"MailBox: {self.imap.inbox}")
+            print(f"""Host: {self.imap.host}:{self.imap.port}
+User: {self.imap.user}
+Passwd: {self.imap.passwd}
+SSL: {self.imap.ssl}
+MailBox: {self.imap.inbox}""")
         else:
             print("Not login.")
 

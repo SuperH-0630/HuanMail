@@ -103,3 +103,6 @@ class Imap:
 
     def add_mail(self, num: str, data: bytes):
         self.__mailbox[num] = Mail(num, data)
+
+    def get_mail(self, num: str):
+        return self.__mailbox.get(num, None)

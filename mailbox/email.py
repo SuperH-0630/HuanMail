@@ -61,13 +61,22 @@ class Mail:
 
     @property
     def body(self):
-        return self.__get_body(self.__data).decode("utf-8")
+        return self.__get_body(self.__data)
 
     def __get_body(self, msg):
         if msg.is_multipart():
-            return self.__get_body(msg.get_payload(0))
+            res = ""
+            for i in msg.get_payload():
+                res += self.__get_body(i)
+            return res
         else:
-            return msg.get_payload(None, decode=True)
+            msg_type = msg.get_content_type()
+            if msg_type == "text/plain":
+                return "text/plain:\n" + msg.get_payload(decode=True).decode('utf-8') + "\n"
+            elif msg_type == "text/html":
+                return "text/html:\n" + msg.get_payload(decode=True).decode('utf-8') + "\n"
+            else:
+                return ""
 
     def save_file(self, file_dir: str):
         return self.__get_files(self.__data, file_dir)
