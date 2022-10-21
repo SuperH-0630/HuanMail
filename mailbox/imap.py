@@ -101,8 +101,23 @@ class Imap:
     def mailbox(self) -> List[Mail]:
         return sorted(self.__mailbox.values(), reverse=True)
 
+    @mailbox.setter
+    def mailbox(self, args: dict):
+        if type(args) is dict and len(args) == 0:
+            self.__mailbox = {}
+        else:
+            raise ValueError
+
     def add_mail(self, num: str, data: bytes):
         self.__mailbox[num] = Mail(num, data)
 
     def get_mail(self, num: str):
         return self.__mailbox.get(num, None)
+
+    def check_login(self):
+        try:
+            self.connect()
+            self.disconnect()
+        except imaplib.IMAP4.error:
+            return False
+        return True

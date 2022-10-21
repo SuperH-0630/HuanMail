@@ -13,11 +13,15 @@ conf: Dict[str, any] = {
     "IMAP_PORT": 143,
     "IMAP_SSL": False,
     "IMAP_START_SSL": False,
+    "IMAP_USERNAME": "{0}",
+    "IMAP_PASSWD": "{0}",
 
     "SMTP_HOST": "localhost",
     "SMTP_PORT": 25,
     "SMTP_SSL": False,
     "SMTP_START_SSL": False,
+    "SMTP_USERNAME": "{0}",
+    "SMTP_PASSWD": "{0}",
 
     "REDIS_HOST": "localhost",
     "REDIS_PORT": 6379,
@@ -51,3 +55,13 @@ def configure(conf_file: str, encoding="utf-8"):
                              "error": logging.ERROR}.get(conf["LOG_LEVEL"])
     if len(conf["LOG_HOME"]) > 0:
         os.makedirs(conf["LOG_HOME"], exist_ok=True)
+
+
+env_dict = os.environ
+huan_mail_conf = env_dict.get("HUAN_MAIL_CONF")
+if huan_mail_conf is None:
+    logging.info("Configure file ./etc/conf.json")
+    configure("./etc/conf.json")
+else:
+    logging.info(f"Configure file {huan_mail_conf}")
+    configure(huan_mail_conf)

@@ -26,3 +26,20 @@ class Sender:
                         [i[1] for i in msg.to_addr + msg.cc_addr + msg.bcc_addr],
                         msg.as_string())
         server.quit()
+
+    def check_login(self):
+        if self.ssl:
+            server = smtplib.SMTP_SSL(self.host, self.port)
+        else:
+            server = smtplib.SMTP(self.host, self.port)
+        server.set_debuglevel(self.debug)
+        if self.start_ssl:
+            server.starttls()
+
+        try:
+            server.login(self.user, self.passwd)
+            server.quit()
+        except (smtplib.SMTPHeloError, smtplib.SMTPAuthenticationError,
+                smtplib.SMTPNotSupportedError, smtplib.SMTPException):
+            return False
+        return True

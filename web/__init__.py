@@ -35,6 +35,9 @@ class HuamMailFlask(Flask):
         from .index import index
         self.register_blueprint(index, url_prefix="/")
 
+        from .auth import auth
+        self.register_blueprint(auth, url_prefix="/auth")
+
     def profile_setting(self):
         if conf["DEBUG_PROFILE"]:
             self.wsgi_app = ProfilerMiddleware(self.wsgi_app, sort_by=("cumtime",))
