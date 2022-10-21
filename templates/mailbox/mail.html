@@ -5,8 +5,15 @@
 <div class="container text-start">
     <h2> {{ mail.title }} </h2>
     <div>
-        <span class="badge bg-danger"> {{ mail.date }} </span>
-        <span class="badge bg-success"> {{ mail.from_addr }} </span>
+        <span class="badge bg-danger"> Date: {{ mail.date }} </span>
+        <span class="badge bg-success"> From: {{ mail.from_addr }} </span>
+        {% for i in mail.to_addr %}
+            <span class="badge bg-dark"> To: {{ i }} </span>
+        {% endfor %}
+
+        {% for i in mail.cc_addr %}
+            <span class="badge bg-info"> To: {{ i }} </span>
+        {% endfor %}
     </div>
 
     {% for i in html_id %}

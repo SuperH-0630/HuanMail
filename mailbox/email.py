@@ -62,7 +62,22 @@ class Mail:
     def from_addr(self):
         if not self.msg_data['From']:
             return ""
+        print(self.to_addr)
         return str(email.header.make_header(email.header.decode_header(self.msg_data['From'])))
+
+    @property
+    def to_addr(self):
+        if not self.msg_data['To']:
+            return []
+        res = str(email.header.make_header(email.header.decode_header(self.msg_data['To'])))
+        return [i.strip() for i in res.split(",")]
+
+    @property
+    def cc_addr(self):
+        if not self.msg_data['Cc']:
+            return []
+        res = str(email.header.make_header(email.header.decode_header(self.msg_data['Cc'])))
+        return [i.strip() for i in res.split(",")]
 
     @property
     def date(self):
