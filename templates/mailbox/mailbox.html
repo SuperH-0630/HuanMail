@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %} 首页 {% endblock %}
+
+{% block content %}
+<div class="container text-center">
+    {% if date %}
+        <h5> {{ date }} - {{ select }} </h5>
+    {% endif %}
+
+    <form method="get" action="{{ url_for("mailbox.mail_list_page") }}" class="was-validated">
+        {# 不需要隐藏字段 #}
+        {{ render_field(to_mail.date) }}
+        <div class="text-end">
+            {{ to_mail.submit(class='btn btn-success me-2') }}
+        </div>
+    </form>
+
+    {% if page == 1 %}
+        <div class="card mt-3">
+            <div class="card-header text-start"> 往后一天查看 </div>
+            <div class="card-body text-start">
+                跳转到后一天的邮箱查看邮件。
+                <div class="text-end">
+                    <a class="card-link" href="{{ url_for("mailbox.mail_list_page", date=next_date, select=select) }}"> 前往 </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if empty %}
+        <div class="card mt-3">
+            <div class="card-header text-start bg-warning"> 未加载出任何邮件 </div>
+            <div class="card-body text-start"> 尝试往前或往后查看，或者等待一段时间吧！</div>
+        </div>
+    {% endif %}
+
+    {% for i in mail_list %}
+        <div class="card mt-3">
+            <div class="card-header text-start"> {{ i.title }} </div>
+            <div class="card-body text-start">
+                <p>
+                    Date: {{ i.date }}
+                    <br>
+                    From: {{ i.from_addr }}
+                </p>
+
+                <div class="text-end">
+                    <a class="card-link"> 查看 </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% if page == max_page %}
+        <div class="card mt-3">
+            <div class="card-header text-start"> 往前一天查看 </div>
+            <div class="card-body text-start">
+                跳转到前一天的邮箱查看邮件。
+                <div class="text-end">
+                    <a class="card-link" href="{{ url_for("mailbox.mail_list_page", date=last_date, select=select) }}"> 前往 </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mt-3">
+        {{ get_page_list(page_list, page) }}
+    </div>
+
+</div>
+{% endblock %}

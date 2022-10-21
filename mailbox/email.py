@@ -19,21 +19,28 @@ class Mail:
     time_zone_pattern = re.compile(r"([+-])([0-9]{2})00")
 
     def __init__(self, num: str, data: bytes):
-        self.__data = message_from_bytes(data)
+        self.__date_ = None
         self.byte = data
         self.num = num
 
     @property
+    def msg_data(self):  # 有需要的时候才加载
+        if self.__date_:
+            return self.__date_
+        self.__date_ = message_from_bytes(self.byte)
+        return self.__date_
+
+    @property
     def from_addr(self):
-        if not self.__data['From']:
+        if not self.msg_data['From']:
             return ""
-        return str(email.header.make_header(email.header.decode_header(self.__data['From'])))
+        return str(email.header.make_header(email.header.decode_header(self.msg_data['From'])))
 
     @property
     def date(self):
-        if not self.__data['Date']:
+        if not self.msg_data['Date']:
             return datetime.datetime(2022, 1, 1)
-        date = str(email.header.make_header(email.header.decode_header(self.__data['Date'])))
+        date = str(email.header.make_header(email.header.decode_header(self.msg_data['Date'])))
         res = self.date_pattern.match(str(date)).groups()
         time = datetime.datetime(int(res[2]),
                                  list(calendar.month_abbr).index(res[1]),
@@ -53,15 +60,15 @@ class Mail:
 
     @property
     def title(self):
-        if not self.__data['Subject']:
+        if not self.msg_data['Subject']:
             return ""
-        return (str(email.header.make_header(email.header.decode_header(self.__data['Subject'])))
+        return (str(email.header.make_header(email.header.decode_header(self.msg_data['Subject'])))
                 .replace('\n', '')
                 .replace('\r', ''))
 
     @property
     def body(self):
-        return self.__get_body(self.__data)
+        return self.__get_body(self.msg_data)
 
     def __get_body(self, msg):
         if msg.is_multipart():
@@ -79,7 +86,7 @@ class Mail:
                 return ""
 
     def save_file(self, file_dir: str):
-        return self.__get_files(self.__data, file_dir)
+        return self.__get_files(self.msg_data, file_dir)
 
     @staticmethod
     def __get_files(msg, file_dir: str):

@@ -97,6 +97,12 @@ class Imap:
             self.__fetch(i)
         self.disconnect()
 
+    def fetch_remote_count(self, opt="ALL"):
+        self.connect()
+        res = len(set(self.__search(opt)) - set(self.__mailbox.keys()))
+        self.disconnect()
+        return res
+
     @property
     def mailbox(self) -> List[Mail]:
         return sorted(self.__mailbox.values(), reverse=True)
