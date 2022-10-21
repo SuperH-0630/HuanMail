@@ -11,6 +11,7 @@ import re
 import smtplib
 
 from sender.email import Email
+from .logger import Logger
 
 sender = Blueprint("sender", __name__)
 
@@ -115,4 +116,5 @@ def send_page():
             else:
                 flash("发信成功")
         return redirect(url_for("sender.send_page"))
+    Logger.print_load_page_log("send")
     return render_template("sender/sender.html", form=form)

@@ -7,6 +7,7 @@ from .configure import conf
 
 from flask_login import UserMixin
 from threading import Thread
+from .logger import Logger
 
 
 EXPIRE = conf["REDIS_EXPIRE"]
@@ -41,8 +42,15 @@ class User(UserMixin):
                         debug=False)
 
         if not imap.check_login():
+            Logger.print_user_opt_success_log("imap check login")
             return False
-        return sender.check_login()
+
+        if not sender.check_login():
+            Logger.print_user_opt_success_log("smtp check login")
+            return False
+
+        Logger.print_user_opt_success_log("check login")
+        return True
 
     @property
     def info(self):
@@ -84,6 +92,11 @@ class User(UserMixin):
                     except UnicodeDecodeError:
                         redis.set(name, b"")
                     redis.expire(name, EXPIRE)
+            except Exception:
+                Logger.print_user_opt_fail_log(f"thread load email")
+                raise
+            else:
+                Logger.print_user_opt_success_log(f"thread load email")
             finally:
                 redis.set(f"download:mutex:{self.username}", 0)
 
@@ -139,3 +152,4 @@ class User(UserMixin):
                         start_ssl=conf["SMTP_START_SSL"],
                         debug=False)
         sender.send(email)
+        Logger.print_user_opt_success_log("send email")

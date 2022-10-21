@@ -57,6 +57,7 @@ def __load_mailbox_page(mail_list, page, to_mail=None, date=None, select=None, n
     page_list = get_page("mailbox.mail_list_page", page, max_page, date=date, select=select)
     page_mail_list: List[Mail] = mail_list[(page - 1) * 10: page * 10]
 
+    Logger.print_load_page_log(f"mail-list date:{date} select:{select}")
     return render_template("mailbox/mailbox.html",
                            to_mail=to_mail,
                            date=date,
@@ -94,7 +95,6 @@ def mail_list_page():
         next_date = None
         last_date = None
 
-    Logger.print_load_page_log("mail list")
     return __load_mailbox_page(mail_list,
                                page,
                                date=date,
@@ -114,7 +114,6 @@ def __get_mail() -> (Mail, str, str, int):
     mail: Mail = current_user.get_mail(date_obj, select, mail_id)
     if not mail:
         abort(404)
-
     return mail, date, select, mail_id
 
 
@@ -168,6 +167,7 @@ def mail_page():
         elif type(i) is PLAIN:
             plain.append(i)
     file_list = mail.file_list
+    Logger.print_load_page_log(f"mail-{mail_id}")
     return render_template("mailbox/mail.html",
                            date=date,
                            select=select,
