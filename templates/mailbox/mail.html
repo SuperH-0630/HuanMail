@@ -10,22 +10,38 @@
     </div>
 
     {% for i in html_id %}
-        <div class="alert alert-success mt-3">
-            <strong>Wow！</strong> 这里有一封HTML邮件。</a>。
+        <div class="card my-2">
+            <div class="card-header"> HTML邮件格式 </div>
+            <iframe class="col-12 my-2 viewer"
+                    src="{{ url_for("mailbox.html_page", date=date, select=select, mail=mail_id, id=i) }}">
+                你的浏览器不支持查阅此邮件。
+            </iframe>
         </div>
-        <iframe class="col-12 my-2 viewer"
-                src="{{ url_for("mailbox.html_page", date=date, select=select, mail=mail_id, id=i) }}">
-            你的浏览器不支持查阅此邮件。
-        </iframe>
     {% endfor %}
 
     {% for i in plain %}
-        <div class="alert alert-info mt-3">
-            <strong>Hi！</strong> 这是一封普通邮件。</a>。
+        <div class="card my-2">
+            <div class="card-header"> 普通邮件格式 </div>
+            <div class="card-body">
+                {{ i.body }}
+            </div>
         </div>
-        <p style="text-indent: 2rem;word-break:break-all;">
-            {{ i.body }}
-        </p>
+    {% endfor %}
+
+    {% for i in file_list %}
+        <div class="card my-2">
+            <div class="card-header"> {{ i.filename }} </div>
+            <div class="card-body">
+                <div class="text-start">
+                    大小：{{ i.size_str }}
+                    <br>
+                    类型：{{ i.content_type }}
+                </div>
+                <div class="text-end">
+                    <a class="card-link" href="{{ url_for("mailbox.file_page", date=date, select=select, mail=mail_id, filename=i.filename) }}"> 下载 </a>
+                </div>
+            </div>
+        </div>
     {% endfor %}
 
 </div>

@@ -18,6 +18,22 @@ class PLAIN:
         self.type = "text/plain"
 
 
+class FILE:
+    def __init__(self, filename, byte: bytes, content_type: str, content_disposition: str):
+        self.filename = filename
+        self.size = len(byte) / 1024 / 1024  # 换算得到mb
+        self.content_type = content_type
+        self.content_disposition = content_disposition
+
+        if self.size >= 0.1:
+            self.size_str = f"{self.size:.2f}MB"
+        elif self.size * 1024 > 0.1:
+            self.size_str = f"{self.size * 1024:.2f}KB"
+        else:
+            self.size_str = f"{int(self.size * 1024 * 1024):d}B"
+
+
+
 class Mail:
     date_pattern = re.compile(
         r"[A-Za-z]+, "
@@ -139,6 +155,33 @@ class Mail:
                 filepath = os.path.join(file_dir, filename)
                 with open(filepath, 'wb') as f:
                     f.write(part.get_payload(decode=True))
+
+    @property
+    def file_list(self):
+        res = []
+        for part in self.msg_data.walk():
+            if part.get_content_maintype() == 'multipart':
+                continue
+            if part.get('Content-Disposition') is None:
+                continue
+
+            filename = part.get_filename()
+            if filename:
+                print(part.get_payload(decode=True))
+                res.append(FILE(filename, part.get_payload(decode=True),
+                                part.get_content_type(), part.get('Content-Disposition')))
+        return res
+
+    def get_file(self, filename) -> "(bytes, str, str) | (None, None, None)":
+        for part in self.msg_data.walk():
+            if part.get_content_maintype() == 'multipart':
+                continue
+            if part.get('Content-Disposition') is None:
+                continue
+
+            if filename == part.get_filename():
+                return part.get_payload(decode=True), part.get_content_type(), part.get('Content-Disposition')
+        return None, None, None
 
     def __lt__(self, other: "Mail"):
         return self.date < other.date

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, abort
+from flask import Blueprint, render_template, request, flash, abort, make_response
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import DateField, SelectField, SubmitField
@@ -70,7 +70,6 @@ def mail_list_page():
             mail_list = []
         elif download:
             flash("启动新任务下载邮件，请稍后")
-            mail_list = []
 
         next_date = strftime("%Y-%m-%d", localtime(mktime(date_obj) + 24 * 60 * 60))
         last_date = strftime("%Y-%m-%d", localtime(mktime(date_obj) - 24 * 60 * 60))
@@ -118,6 +117,23 @@ def html_page():
     return abort(404)
 
 
+@mailbox.route("/file")
+@login_required
+def file_page():
+    filename = request.args.get("filename", None, type=str)
+    if not filename:
+        abort(404)
+    mail, *_ = __get_mail()
+    byte, content_type, content_disposition = mail.get_file(filename)
+    if not byte:
+        abort(404)
+
+    response = make_response(byte)
+    response.headers['Content-Type'] = content_type
+    response.headers['Content-Disposition'] = content_disposition
+    return response
+
+
 @mailbox.route("/mail")
 @login_required
 def mail_page():
@@ -132,11 +148,12 @@ def mail_page():
             html_id.append(count)
         elif type(i) is PLAIN:
             plain.append(i)
-
+    file_list = mail.file_list
     return render_template("mailbox/mail.html",
                            date=date,
                            select=select,
                            mail_id=mail_id,
                            mail=mail,
                            html_id=html_id,
-                           plain=plain)
+                           plain=plain,
+                           file_list=file_list)
