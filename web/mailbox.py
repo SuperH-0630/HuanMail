@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, flash, abort, make_response
+import imaplib
+from functools import wraps
+from flask import Blueprint, render_template, request, flash, abort, make_response, redirect, url_for
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import DateField, SelectField, SubmitField
@@ -34,6 +36,19 @@ class ToMailboxForm(FlaskForm):
         self.select.default = "INBOX"
 
 
+def except_imap_error(func):
+    @wraps(func)
+    def new_func(*args, **kwargs):
+        try:
+            res = func(*args, **kwargs)
+        except imaplib.IMAP4.error:
+            flash("IMAP连接异常, 请重新尝试")
+            return redirect(url_for("mailbox.mail_list_page"))
+        else:
+            return res
+    return new_func
+
+
 def __load_mailbox_page(mail_list, page, to_mail=None, date=None, select=None, next_date=None, last_date=None):
     if not to_mail:
         to_mail = ToMailboxForm(current_user.get_inbox_list())
@@ -57,6 +72,7 @@ def __load_mailbox_page(mail_list, page, to_mail=None, date=None, select=None, n
 
 @mailbox.route("/")
 @login_required
+@except_imap_error
 def mail_list_page():
     date = request.args.get("date", None, type=str)
     select = request.args.get("select", "INBOX", type=str)
@@ -104,6 +120,7 @@ def __get_mail() -> (Mail, str, str, int):
 
 @mailbox.route("/html")
 @login_required
+@except_imap_error
 def html_page():
     html_id = request.args.get("id", 1, type=int)
     mail, *_ = __get_mail()
@@ -119,6 +136,7 @@ def html_page():
 
 @mailbox.route("/file")
 @login_required
+@except_imap_error
 def file_page():
     filename = request.args.get("filename", None, type=str)
     if not filename:
@@ -136,6 +154,7 @@ def file_page():
 
 @mailbox.route("/mail")
 @login_required
+@except_imap_error
 def mail_page():
     mail, date, select, mail_id = __get_mail()
 
