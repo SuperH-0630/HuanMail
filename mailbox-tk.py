@@ -52,7 +52,7 @@ class MailboxGUI(tk.Tk):
 
         self.imap: Optional[Imap] = None
 
-        self.iconbitmap('HuanMail.ico')
+        self.iconbitmap('static/HuanMail.ico')
         self.title("HuanMail (IMAP)")
         self.resizable(False, False)
 

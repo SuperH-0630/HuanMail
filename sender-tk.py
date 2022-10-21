@@ -57,7 +57,7 @@ class SenderGUI(tk.Tk):
         self.sender: Optional[Sender] = None
         self.email: Optional[Email] = None
 
-        self.iconbitmap('HuanMail.ico')
+        self.iconbitmap('static/HuanMail.ico')
         self.title("HuanMail (SMTP)")
         self.resizable(False, False)
 
