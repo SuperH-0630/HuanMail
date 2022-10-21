@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container">
-    <form method="post" action="{{ url_for("sender.send_page") }}" class="was-validated">
+    <form method="post" action="{{ url_for("sender.send_page") }}" class="was-validated" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
         {{ render_field(form.sender_name) }}
@@ -15,6 +15,7 @@
         {{ render_field(form.bcc) }}
 
         {{ render_text_field(form.content) }}
+        {{ render_file_field(form.file) }}
 
         <div class="text-end">
             {{ form.submit(class='btn btn-success me-2') }}

@@ -29,6 +29,15 @@
     </div>
 {% endmacro %}
 
+{% macro render_file_field(field) %}
+    <div class="form-group my-3 pb-2">
+        {{ field(class="form-control") }}
+        {% for error in field.errors %}
+            <div class="invalid-feedback d-block"> {{ error }} </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
 {% macro render_text_field(field) %}
     <div class="form-group form-floating my-3">
         {% if not field.errors %}

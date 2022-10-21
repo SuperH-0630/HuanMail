@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_wtf import FlaskForm
 from wtforms import (StringField,
                      SubmitField,
                      TextAreaField,
+                     FileField,
                      ValidationError)
 from wtforms.validators import DataRequired, Regexp
 from flask_login import login_required, current_user
@@ -30,6 +31,7 @@ class MailInputForm(FlaskForm):
     bcc = StringField("密送人", description="密送人")
 
     content = TextAreaField("普通邮件正文", description="邮件正文")
+    file = FileField("附件", description="邮件附件")
 
     submit = SubmitField("发送")
 
@@ -97,7 +99,11 @@ def send_page():
                       to_addr=form.rc_,
                       cc_addr=form.cc_,
                       bcc_addr=form.bcc_)
+
         email.add_text(form.content.data)
+
+        if len(form.file.data.filename) != 0:
+            email.add_bytes(form.file.data.filename, form.file.data.stream.read())
 
         if len(form.rc_) + len(form.cc_) + len(form.bcc_) <= 0:
             flash("没有收件人")
