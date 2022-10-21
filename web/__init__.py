@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, Response
 from flask.logging import default_handler
 import logging
 import logging.handlers
@@ -69,14 +69,13 @@ class HuamMailFlask(Flask):
         self.config.update(conf)
 
     def error_page(self, error_code):
-        # for i in error_code:
-        #     def create_error_handle(status):  # 创建一个 status 变量给 error_handle
-        #         def error_handle(e):
-        #             Logger.print_load_page_log(status)
-        #             data = render_template('error.html', error_code=status, error_info=e)
-        #             return Response(response=data, status=status)
-        #
-        #         return error_handle
-        #
-        #     self.errorhandler(i)(create_error_handle(i))
-        pass
+        for i in error_code:
+            def create_error_handle(status):  # 创建一个 status 变量给 error_handle
+                def error_handle(e):
+                    Logger.print_load_page_log(status)
+                    data = render_template('error.html', error_code=status, error_info=e)
+                    return Response(response=data, status=status)
+
+                return error_handle
+
+            self.errorhandler(i)(create_error_handle(i))
