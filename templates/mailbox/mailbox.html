@@ -47,7 +47,7 @@
                     </p>
 
                     <div class="text-end">
-                        <a class="card-link"> 查看 </a>
+                        <a class="card-link" href="{{ url_for("mailbox.mail_page", date=date, select=select, mail=i.num) }}" target="_blank"> 查看 </a>
                     </div>
                 </div>
             </div>

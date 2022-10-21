@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %} 邮件 {% endblock %}
+
+{% block content %}
+<div class="container text-start">
+    <h2> {{ mail.title }} </h2>
+    <div>
+        <span class="badge bg-danger"> {{ mail.date }} </span>
+        <span class="badge bg-success"> {{ mail.from_addr }} </span>
+    </div>
+
+    {% for i in html_id %}
+        <div class="alert alert-success mt-3">
+            <strong>Wow！</strong> 这里有一封HTML邮件。</a>。
+        </div>
+        <iframe class="col-12 my-2 viewer"
+                src="{{ url_for("mailbox.html_page", date=date, select=select, mail=mail_id, id=i) }}">
+            你的浏览器不支持查阅此邮件。
+        </iframe>
+    {% endfor %}
+
+    {% for i in plain %}
+        <div class="alert alert-info mt-3">
+            <strong>Hi！</strong> 这是一封普通邮件。</a>。
+        </div>
+        <p style="text-indent: 2rem;word-break:break-all;">
+            {{ i.body }}
+        </p>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+
+
+{% block javascript_foot %}
+    {{ super() }}
+    <script>
+        const ifr_list = document.getElementsByClassName('viewer');
+        for (let i = 0; i < ifr_list.length; ++i) {
+            ifr_list[i].onload = function () {
+                const ifr = ifr_list[i]
+                const oHeight = Math.max(ifr.contentWindow.document.documentElement.offsetHeight, ifr.contentWindow.document.body.offsetHeight);
+                const cHeight = Math.max(ifr.contentWindow.document.documentElement.clientHeight, ifr.contentWindow.document.body.clientHeight);
+                const height = Math.max(oHeight, cHeight);
+                ifr.style.height = height + 'px'
+            }
+        }
+      </script>
+
+{% endblock %}

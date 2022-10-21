@@ -1,5 +1,6 @@
 from sender.smtp import Sender
 from mailbox.imap import Imap
+from mailbox.email import Mail
 from .db import redis
 from .configure import conf
 
@@ -75,7 +76,7 @@ class User(UserMixin):
             finally:
                 redis.set(f"download:mutex:{self.username}", 0)
 
-    def get_mail(self, inbox: str, date: str):
+    def get_mail_list(self, inbox: str, date: str):
         imap = Imap(user=conf["IMAP_USERNAME"].format(self.username),
                     passwd=conf["IMAP_PASSWD"].format(self.passwd),
                     host=conf["IMAP_HOST"],
@@ -107,3 +108,10 @@ class User(UserMixin):
                     ssl=conf["IMAP_SSL"],
                     start_ssl=conf["IMAP_START_SSL"])
         return imap.list()
+
+    def get_mail(self, date, inbox, mail_id):
+        byte = redis.get(f"mailbox:{self.username}:{inbox}:{date}:{mail_id}")
+        if not byte:
+            return None
+        return Mail(str(mail_id), byte.encode("utf-8"))
+

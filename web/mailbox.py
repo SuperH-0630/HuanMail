@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, abort
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import DateField, SelectField, SubmitField
@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired
 from time import strftime, strptime, mktime, localtime
 from typing import List
 
-from mailbox.email import Mail
+from mailbox.email import Mail, HTML, PLAIN
 from .page import get_page, get_max_page
 from .logger import Logger
 
@@ -64,7 +64,7 @@ def mail_list_page():
 
     if date:
         date_obj = strptime(date, "%Y-%m-%d")
-        mail_list, download = current_user.get_mail(select, strftime('%d-%b-%Y', date_obj))
+        mail_list, download = current_user.get_mail_list(select, strftime('%d-%b-%Y', date_obj))
         if mail_list is None and not download:
             flash("旧任务未完成，正在下载邮件，请稍后")
             mail_list = []
@@ -86,3 +86,57 @@ def mail_list_page():
                                select=select,
                                next_date=next_date,
                                last_date=last_date)
+
+
+def __get_mail() -> (Mail, str, str, int):
+    mail_id = request.args.get("mail", None, type=int)
+    date = request.args.get("date", None, type=str)
+    select = request.args.get("select", None, type=str)
+    if not mail_id or not date or not select:
+        abort(404)
+
+    date_obj = strftime('%d-%b-%Y', strptime(date, "%Y-%m-%d"))
+    mail: Mail = current_user.get_mail(date_obj, select, mail_id)
+    if not mail:
+        abort(404)
+
+    return mail, date, select, mail_id
+
+
+@mailbox.route("/html")
+@login_required
+def html_page():
+    html_id = request.args.get("id", 1, type=int)
+    mail, *_ = __get_mail()
+
+    count = 0
+    for i in mail.body_list:
+        count += 1
+        if type(i) is HTML:
+            if count == html_id:
+                return i.body
+    return abort(404)
+
+
+@mailbox.route("/mail")
+@login_required
+def mail_page():
+    mail, date, select, mail_id = __get_mail()
+
+    count = 0
+    html_id = []
+    plain = []
+    for i in mail.body_list:
+        count += 1
+        if type(i) is HTML:
+            html_id.append(count)
+        elif type(i) is PLAIN:
+            plain.append(i)
+
+    return render_template("mailbox/mail.html",
+                           date=date,
+                           select=select,
+                           mail_id=mail_id,
+                           mail=mail,
+                           html_id=html_id,
+                           plain=plain)

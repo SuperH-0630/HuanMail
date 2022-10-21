@@ -6,6 +6,18 @@ import datetime
 import calendar
 
 
+class HTML:
+    def __init__(self, body):
+        self.body = body
+        self.type = "text/html"
+
+
+class PLAIN:
+    def __init__(self, body):
+        self.body = body
+        self.type = "text/plain"
+
+
 class Mail:
     date_pattern = re.compile(
         r"[A-Za-z]+, "
@@ -84,6 +96,27 @@ class Mail:
                 return "text/html:\n" + msg.get_payload(decode=True).decode('utf-8') + "\n"
             else:
                 return ""
+
+    @property
+    def body_list(self):
+        return self.__get_body_list(self.msg_data)
+
+    def __get_body_list(self, msg):
+        if msg.is_multipart():
+            res = []
+            for i in msg.get_payload():
+                son = self.__get_body_list(i)
+                if son is not None:
+                    res += son
+            return res
+        else:
+            msg_type = msg.get_content_type()
+            if msg_type == "text/plain":
+                return [PLAIN(msg.get_payload(decode=True).decode('utf-8'))]
+            elif msg_type == "text/html":
+                return [HTML(msg.get_payload(decode=True).decode('utf-8'))]
+            else:
+                return None
 
     def save_file(self, file_dir: str):
         return self.__get_files(self.msg_data, file_dir)
