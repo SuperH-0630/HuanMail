@@ -9,6 +9,9 @@ from flask_login import UserMixin
 from threading import Thread
 
 
+EXPIRE = conf["REDIS_EXPIRE"]
+
+
 class User(UserMixin):
     def __init__(self, username, passwd=None):
         self.id = username
@@ -69,15 +72,18 @@ class User(UserMixin):
                 for i in redis.keys(f"mailbox:{self.username}:{self.inbox}:{self.date}:*"):
                     num = i.split(":")[-1]
                     byte = redis.get(i)
-                    self.imap.add_mail(num, byte.encode("utf-8"))
+                    if byte:  # 避免在keys和get之前键过期
+                        self.imap.add_mail(num, byte.encode("utf-8"))
 
                 self.imap.fetch_all(f"ON {self.date}")
 
                 for i in self.imap.mailbox:
+                    name = f"mailbox:{self.username}:{self.inbox}:{self.date}:{i.num}"
                     try:
-                        redis.set(f"mailbox:{self.username}:{self.inbox}:{self.date}:{i.num}", i.byte)
+                        redis.set(name, i.byte)
                     except UnicodeDecodeError:
-                        redis.set(f"mailbox:{self.username}:{self.inbox}:{self.date}:{i.num}", b"")
+                        redis.set(name, b"")
+                    redis.expire(name, EXPIRE)
             finally:
                 redis.set(f"download:mutex:{self.username}", 0)
 
@@ -93,7 +99,8 @@ class User(UserMixin):
         for i in redis.keys(f"mailbox:{self.username}:{inbox}:{date}:*"):
             num = i.split(":")[-1]
             byte = redis.get(i)
-            imap.add_mail(num, byte.encode("utf-8"))
+            if byte:
+                imap.add_mail(num, byte.encode("utf-8"))
 
         if imap.fetch_remote_count(f"ON {date}") != 0:
             # 需要从远程服务器下载资源
@@ -115,9 +122,11 @@ class User(UserMixin):
         return imap.list()
 
     def get_mail(self, date, inbox, mail_id):
-        byte = redis.get(f"mailbox:{self.username}:{inbox}:{date}:{mail_id}")
+        name = f"mailbox:{self.username}:{inbox}:{date}:{mail_id}"
+        byte = redis.get(name)
         if not byte:
             return None
+        redis.expire(name, EXPIRE)
         return Mail(str(mail_id), byte.encode("utf-8"))
 
 

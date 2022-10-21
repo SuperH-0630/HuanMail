@@ -28,6 +28,7 @@ conf: Dict[str, any] = {
     "REDIS_NAME": "localhost",
     "REDIS_PASSWD": "123456",
     "REDIS_DATABASE": 0,
+    "REDIS_EXPIRE": 604800,  # 默认七天过期
 
     "LOG_HOME": "",
     "LOG_FORMAT": "[%(levelname)s]:%(name)s:%(asctime)s "
