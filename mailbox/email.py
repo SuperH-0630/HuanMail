@@ -62,7 +62,6 @@ class Mail:
     def from_addr(self):
         if not self.msg_data['From']:
             return ""
-        print(self.to_addr)
         return str(email.header.make_header(email.header.decode_header(self.msg_data['From'])))
 
     @property
