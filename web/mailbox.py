@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
-from wtforms import DateField, SubmitField
+from wtforms import DateField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 from time import strftime, strptime, mktime, localtime
 from typing import List
@@ -16,13 +16,27 @@ mailbox = Blueprint("mailbox", __name__)
 
 class ToMailboxForm(FlaskForm):
     date = DateField("发信时间", description="信件发送时间", validators=[DataRequired("必须选择时间")])
+    select = SelectField("文件夹", description="INBOX或其他文件夹", validators=[DataRequired("必须选择文件夹")])
     submit = SubmitField("查询")
 
+    def __init__(self, select: list):
+        super(ToMailboxForm, self).__init__()
+
+        try:
+            del select[select.index("INBOX")]
+            select = ["INBOX"] + select
+        except ValueError:
+            pass
+
+
+        self.select.choices = select
+        self.select.coerce = str
+        self.select.default = "INBOX"
 
 
 def __load_mailbox_page(mail_list, page, to_mail=None, date=None, select=None, next_date=None, last_date=None):
     if not to_mail:
-        to_mail = ToMailboxForm()
+        to_mail = ToMailboxForm(current_user.get_inbox_list())
 
     max_page = get_max_page(len(mail_list), 10)
     page_list = get_page("mailbox.mail_list_page", page, max_page, date=date, select=select)

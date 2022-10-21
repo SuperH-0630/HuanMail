@@ -98,3 +98,12 @@ class User(UserMixin):
             th.start()
             return imap.mailbox, True
         return imap.mailbox, False
+
+    def get_inbox_list(self):
+        imap = Imap(user=conf["IMAP_USERNAME"].format(self.username),
+                    passwd=conf["IMAP_PASSWD"].format(self.passwd),
+                    host=conf["IMAP_HOST"],
+                    port=conf["IMAP_PORT"],
+                    ssl=conf["IMAP_SSL"],
+                    start_ssl=conf["IMAP_START_SSL"])
+        return imap.list()

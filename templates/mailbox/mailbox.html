@@ -10,6 +10,7 @@
     <form method="get" action="{{ url_for("mailbox.mail_list_page") }}" class="was-validated">
         {# 不需要隐藏字段 #}
         {{ render_field(to_mail.date) }}
+        {{ render_select_field(to_mail.select) }}
         <div class="text-end">
             {{ to_mail.submit(class='btn btn-success me-2') }}
         </div>
