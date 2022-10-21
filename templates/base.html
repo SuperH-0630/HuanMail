@@ -1,0 +1,98 @@
+{% macro render_field(field) %}
+    <div class="form-group form-floating my-3">
+        {% if not field.errors %}
+            {{ field(class="form-control", placeholder=field.label.text) | safe }}
+        {% else %}
+            {{ field(class="form-control", placeholder=field.label.text, value="") | safe }}
+        {% endif %}
+
+        {{ field.label }}
+        {% for error in field.errors %}
+            <div class="invalid-feedback"> {{ error }} </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro render_text_field(field) %}
+    <div class="form-group form-floating my-3">
+        {% if not field.errors %}
+            {{ field(class="form-control", placeholder=field.label.text, style="height: 40vh") | safe }}
+        {% else %}
+            {{ field(class="form-control", placeholder=field.label.text, style="height: 40vh", value="") | safe }}
+        {% endif %}
+
+        {{ field.label }}
+        {% for error in field.errors %}
+            <div class="invalid-feedback"> {{ error }} </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro render_select_field(field) %}
+    <div class="form-group my-3">
+        {{ field(class="form-select") | safe }}
+        {% for error in field.errors %}
+            <div class="invalid-feedback d-block"> {{ error }} </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+
+{% macro show_time(time) %}
+    {{ moment(datetime.utcfromtimestamp(datetime.timestamp(time))).format('YYYY-MM-DD HH:mm:ss') }}
+{% endmacro %}
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% block icon %}
+        <link rel="icon" href="{{ url_for('static', filename=conf["LOGO"]) }}" type="image/x-icon"/>
+    {% endblock %}
+
+    {% block font %}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;400&display=swap" rel="stylesheet">
+    {% endblock %}
+
+    {% block style %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        <style>
+            html {
+                font-family: 'Noto Sans SC', sans-serif;
+            }
+        </style>
+    {% endblock %}
+
+    {% block javascript %}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+        {{ moment.include_moment() }}
+        {{ moment.lang("zh-CN") }}
+    {% endblock %}
+
+    <title>{% block title %} {% endblock %} - {{ conf["WEBSITE_NAME"] }} </title>
+</head>
+
+<body>
+    {% block nav %}
+        <div class="container mt-2">
+            <a class="h3" href="/" style="text-decoration:none;color:#333;"> {{ conf["WEBSITE_TITLE"] }} </a>
+            <a href="{{ url_for("base.index_page") }}" class="btn btn-outline-danger float-end mx-2"> 退出登录 </a>
+        </div>
+    {% endblock %}
+
+    <section class="container mt-4 mb-2">
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-info fade show">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            {{ message }}
+        </div>
+    {% endfor %}
+    </section>
+
+    {% block content %} {% endblock %}
+</body>
+</html>

@@ -5,10 +5,26 @@ from typing import Dict
 
 
 conf: Dict[str, any] = {
-    "DEBUG_PROFILE": False,
-    "SMTP_JSON": "smtp.json",
-    "IMAP_JSON": "imap.json",
     "SECRET_KEY": "HuanMail-R-Salt",
+    "WEBSITE_NAME": "HuanMail",
+    "WEBSITE_TITLE": "HuanMail-在线邮件系统",
+
+    "IMAP_HOST": "localhost",
+    "IMAP_PORT": 143,
+    "IMAP_SSL": False,
+    "IMAP_START_SSL": False,
+
+    "SMTP_HOST": "localhost",
+    "SMTP_PORT": 25,
+    "SMTP_SSL": False,
+    "SMTP_START_SSL": False,
+
+    "REDIS_HOST": "localhost",
+    "REDIS_PORT": 6379,
+    "REDIS_NAME": "localhost",
+    "REDIS_PASSWD": "123456",
+    "REDIS_DATABASE": 0,
+
     "LOG_HOME": "",
     "LOG_FORMAT": "[%(levelname)s]:%(name)s:%(asctime)s "
                   "(%(filename)s:%(lineno)d %(funcName)s) "
@@ -16,6 +32,8 @@ conf: Dict[str, any] = {
                   "%(message)s",
     "LOG_LEVEL": logging.INFO,
     "LOG_STDERR": True,
+    "DEBUG_PROFILE": False,
+
     "LOGO": "HuanMail.ico",
 }
 
