@@ -1,8 +1,12 @@
 from time import strftime, localtime
+import mimetypes
 
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
+from email.mime.audio import MIMEAudio
+from email.mime.image import MIMEImage
+from email.mime.message import MIMEMessage
+from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import parseaddr, formataddr
 
@@ -68,7 +72,24 @@ class Email:
         for i in self.html:
             msg.attach(MIMEText(i, 'html', 'utf-8'))
         for filename, i in self.file:
-            msg_file = MIMEApplication(i)
+            content_type = mimetypes.guess_type(filename)[0]
+            if not content_type:
+                content_type = "application/octet-stream"
+            main_type, sub_type = content_type.split("/")
+
+            if main_type == "application":
+                msg_file = MIMEApplication(i, _subtype=sub_type)
+            elif main_type == "audio":
+                msg_file = MIMEAudio(i, _subtype=sub_type)
+            elif main_type == "image":
+                msg_file = MIMEImage(i, _subtype=sub_type)
+            elif main_type == "message":
+                msg_file = MIMEMessage(i, _subtype=sub_type)
+            elif main_type == "text":
+                msg_file = MIMEText(i, _subtype=sub_type)
+            else:
+                msg_file = MIMEApplication(i)
+
             msg_file.add_header('Content-Disposition', 'attachment', filename=filename)
             msg.attach(msg_file)
         return msg

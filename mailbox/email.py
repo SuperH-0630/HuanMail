@@ -167,7 +167,6 @@ class Mail:
 
             filename = part.get_filename()
             if filename:
-                print(part.get_payload(decode=True))
                 res.append(FILE(filename, part.get_payload(decode=True),
                                 part.get_content_type(), part.get('Content-Disposition')))
         return res
