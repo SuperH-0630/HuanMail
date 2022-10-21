@@ -1,4 +1,5 @@
 from sender.smtp import Sender
+from sender.email import Email
 from mailbox.imap import Imap
 from mailbox.email import Mail
 from .db import redis
@@ -15,6 +16,10 @@ class User(UserMixin):
 
         if passwd:
             redis.hmset(f"user:{username}", {"passwd": passwd})
+
+    @property
+    def smtp_address(self):
+        return conf["SMTP_USERNAME"].format(self.username)
 
     def check_login(self):
         imap = Imap(user=conf["IMAP_USERNAME"].format(self.username),
@@ -115,3 +120,13 @@ class User(UserMixin):
             return None
         return Mail(str(mail_id), byte.encode("utf-8"))
 
+
+    def send(self, email: Email):
+        sender = Sender(user=conf["SMTP_USERNAME"].format(self.username),
+                        passwd=conf["SMTP_PASSWD"].format(self.passwd),
+                        host=conf["SMTP_HOST"],
+                        port=conf["SMTP_PORT"],
+                        ssl=conf["SMTP_SSL"],
+                        start_ssl=conf["SMTP_START_SSL"],
+                        debug=False)
+        sender.send(email)

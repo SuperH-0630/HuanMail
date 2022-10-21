@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %} 发送邮件 {% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="post" action="{{ url_for("sender.send_page") }}" class="was-validated">
+        {{ form.hidden_tag() }}
+
+        {{ render_field(form.sender_name) }}
+        {{ render_field(form.sender_address) }}
+        {{ render_field(form.subject) }}
+
+        {{ render_field(form.rc) }}
+        {{ render_field(form.cc) }}
+        {{ render_field(form.bcc) }}
+
+        {{ render_text_field(form.content) }}
+
+        <div class="text-end">
+            {{ form.submit(class='btn btn-success me-2') }}
+        </div>
+    </form>
+</div>
+{% endblock %}
