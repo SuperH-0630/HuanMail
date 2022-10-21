@@ -8,7 +8,6 @@ import sys
 from .configure import conf
 from .logger import Logger
 from .login import login
-from .moment import moment
 
 
 if conf["DEBUG_PROFILE"]:
@@ -23,7 +22,6 @@ class HuamMailFlask(Flask):
         self.logging_setting()
         self.blueprint()
 
-        moment.init_app(self)
         login.init_app(self)
 
         @self.context_processor
