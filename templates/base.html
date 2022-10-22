@@ -112,9 +112,50 @@
     {% endfor %}
     </section>
 
-    {% block content %} {% endblock %}
+    <div id="content">
+        {% block content %} {% endblock %}
+    </div>
 
     {% block javascript_foot %}
+    {% endblock %}
+
+    {% block footer %}
+        {# footer 最后加载 #}
+        <footer id="foot" class="text-center">
+            <hr>
+            {{ conf['FOOT'] }}
+            {% if get_icp() %}
+                <br> <a id="ICP2" href="https://beian.miit.gov.cn" target="_blank" class="my-2"
+                    style="display:inline-block;text-decoration:none;height:20px;line-height:20px;" >
+                    {{ get_icp() }} </a>
+            {% endif %}
+        </footer>
+
+        <script>
+            function SetFooter (mutationsList, observer) {
+                let foot = document.getElementById('foot')
+                let content = document.getElementById('content')
+                let content_height = content.getBoundingClientRect().bottom  // 返回 content距离视窗底部的位置
+                let win_height = 0
+                if (window.innerHeight)  // 浏览器窗口的大小
+                    win_height = window.innerHeight;
+                else if ((document.body) && (document.body.clientHeight))  // body的大小, 也表示浏览器窗口的大小
+                    win_height = document.body.clientHeight;
+
+                if (win_height - content_height - foot.clientHeight <= 0)
+                    foot.style.marginTop = "0"
+                else
+                    foot.style.marginTop = (win_height - content_height - foot.clientHeight).toString() + "px"
+            }
+
+            let MutationObserver = window.MutationObserver;
+            let observer = new MutationObserver(SetFooter);
+            observer.observe(content, {
+                attributes: true, // 属性的变动
+                subtree: true, // 是否将观察器应用于该节点的所有后代节点
+            });
+            SetFooter()
+        </script>
     {% endblock %}
 </body>
 </html>

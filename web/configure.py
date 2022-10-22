@@ -40,6 +40,8 @@ conf: Dict[str, any] = {
     "DEBUG_PROFILE": False,
 
     "LOGO": "HuanMail.ico",
+    "FOOT": "HuanMail 感谢您的使用",
+    "ICP": [],
 }
 
 

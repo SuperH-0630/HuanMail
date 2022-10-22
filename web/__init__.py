@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, request
 from flask.logging import default_handler
 import logging
 import logging.handlers
@@ -27,9 +27,16 @@ class HuamMailFlask(Flask):
         @self.context_processor
         def inject_base():
             """ app默认模板变量 """
-            return {"conf": conf}
+            return {"conf": conf,
+                    "get_icp": self.get_icp}
 
         self.error_page([400, 401, 403, 404, 405, 408, 410, 413, 414, 423, 500, 501, 502])
+
+    @staticmethod
+    def get_icp():
+        for i in conf["ICP"]:
+            if i in request.host:
+                return conf["ICP"][i]
 
     def blueprint(self):
         from .index import index
