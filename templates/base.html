@@ -123,11 +123,13 @@
         {# footer 最后加载 #}
         <footer id="foot" class="text-center">
             <hr>
-            {{ conf['FOOT'] }}
+            <div class="pb-2"> {{ conf['FOOT'] }} </div>
             {% if get_icp() %}
-                <br> <a id="ICP2" href="https://beian.miit.gov.cn" target="_blank" class="my-2"
-                    style="display:inline-block;text-decoration:none;height:20px;line-height:20px;" >
-                    {{ get_icp() }} </a>
+                <div class="pb-2">
+                    <a id="ICP2" href="https://beian.miit.gov.cn" target="_blank"
+                        style="display:inline-block;text-decoration:none;height:20px;line-height:20px;" >
+                        {{ get_icp() }} </a>
+                </div>
             {% endif %}
         </footer>
 
