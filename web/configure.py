@@ -41,7 +41,7 @@ conf: Dict[str, any] = {
 
     "LOGO": "HuanMail.ico",
     "FOOT": "HuanMail 感谢您的使用",
-    "ICP": [],
+    "ICP": {},
 }
 
 
