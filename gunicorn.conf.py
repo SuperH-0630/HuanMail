@@ -3,6 +3,7 @@ import os
 import multiprocessing
 import logging.handlers
 import logging
+from web.configure import conf
 
 try:
     import gevent.monkey
@@ -19,6 +20,7 @@ threads = 2  # 指定每个进程开启的线程数
 
 huan_mail_path = os.path.join(os.environ['HOME'], "huanmail")
 os.makedirs(huan_mail_path, exist_ok=True, mode=0o775)
+conf["LOG_HOME"] = huan_mail_path
 
 # 设置访问日志和错误信息日志路径
 log_format = ("[%(levelname)s]:%(name)s:%(asctime)s "
