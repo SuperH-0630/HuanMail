@@ -93,10 +93,7 @@ class User(UserMixin):
                         redis.set(name, b"")
                     redis.expire(name, EXPIRE)
             except Exception:
-                Logger.print_user_opt_fail_log(f"thread load email")
                 raise
-            else:
-                Logger.print_user_opt_success_log(f"thread load email")
             finally:
                 redis.set(f"download:mutex:{self.username}", 0)
 
