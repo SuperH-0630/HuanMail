@@ -27,8 +27,6 @@ class Imap:
     @inbox.setter
     def inbox(self, inbox):
         self.__inbox = inbox
-        self.connect()  # 测试连接
-        self.disconnect()
         self.__mailbox = {}
 
     def connect(self):
