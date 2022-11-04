@@ -126,13 +126,21 @@ class User(UserMixin):
         return imap.mailbox, False
 
     def get_inbox_list(self):
+        inbox = redis.lrange(f"inbox:{self.username}", 0, -1)
+        if len(inbox) != 0:
+            return inbox
+
         imap = Imap(user=conf["IMAP_USERNAME"].format(self.username),
                     passwd=conf["IMAP_PASSWD"].format(self.passwd),
                     host=conf["IMAP_HOST"],
                     port=conf["IMAP_PORT"],
                     ssl=conf["IMAP_SSL"],
                     start_ssl=conf["IMAP_START_SSL"])
-        return imap.list()
+
+        inbox = imap.list()
+        redis.lpush(f"inbox:{self.username}", *inbox)
+        redis.expire(f"inbox:{self.username}", EXPIRE)
+        return inbox
 
     def get_mail(self, date, inbox, mail_id):
         name = f"mailbox:{self.username}:{inbox}:{date}:{mail_id}"
